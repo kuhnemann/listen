@@ -1,4 +1,5 @@
 """tests"""
+from asyncio import sleep as asleep
 from datetime import datetime, timedelta
 
 from fastapi.testclient import TestClient
@@ -61,6 +62,7 @@ class MockRequest(BaseModel):
     """
     Class to mock incoming requests
     """
+
     headers: dict
     method: str
     url: str
@@ -161,6 +163,19 @@ async def test_header_reporter_reset():
     assert len(h_r.recent_records) == 0
 
 
+async def test_header_reporter_created_time():
+    """
+    Test for correct created time for stored incoming calls.
+    :return:
+    """
+    h_r = HeaderReporter()
+    new_req = _get_mock_request()
+    await h_r.add_call(new_req, filename="test_1")
+    await asleep(1)
+    await h_r.add_call(new_req, filename="test_2")
+    assert h_r.recent_records[0]["created_time"] > h_r.recent_records[1]["created_time"]
+
+
 if __name__ == "__main__":
     import asyncio
     import os
@@ -170,3 +185,4 @@ if __name__ == "__main__":
 
     asyncio.run(test_header_reporter_clean_old())
     asyncio.run(test_header_reporter_reset())
+    asyncio.run(test_header_reporter_created_time())

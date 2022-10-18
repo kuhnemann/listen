@@ -30,7 +30,7 @@ class HeaderReporter:
         self,
         request: Request,
         filename: str,
-        created_time: datetime = datetime.utcnow(),
+        created_time: datetime = None,
     ):
         """
         Parse and add incoming calls to deque
@@ -40,6 +40,9 @@ class HeaderReporter:
         :param filename:
         :return:
         """
+        if created_time is None:
+            created_time = datetime.utcnow()
+
         last_call = {
             "created_time": created_time,
             "headers": request.headers,
